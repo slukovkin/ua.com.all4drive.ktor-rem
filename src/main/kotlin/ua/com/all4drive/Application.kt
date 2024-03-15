@@ -8,6 +8,7 @@ import ua.com.all4drive.features.auth.registration.registerRouting
 import ua.com.all4drive.plugins.*
 
 fun main() {
+
     embeddedServer(CIO, port = 3000, host = "0.0.0.0", module = Application::module)
         .start(wait = true)
 }
