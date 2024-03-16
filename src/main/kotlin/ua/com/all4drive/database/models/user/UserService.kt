@@ -7,6 +7,7 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.UUID
 
+data class User(val userId: String, val email: String, val password: String)
 class UserService(database: Database) {
     object Users : Table("users") {
         private val userId = Users.varchar("id", 150)
@@ -15,8 +16,19 @@ class UserService(database: Database) {
 
         override val primaryKey = PrimaryKey(userId)
 
-        private suspend fun <T> dbQuery(block: suspend () -> T): T =
-            newSuspendedTransaction(Dispatchers.IO) { block() }
+        private suspend fun <T> dbQuery(block: suspend () -> T): T = newSuspendedTransaction(Dispatchers.IO) { block() }
+
+        suspend fun getAll(): List<User> = dbQuery {
+            dbQuery {
+                Users.selectAll().map(::resultRowToUser)
+            }
+        }
+
+        fun findUserByEmail(email: String): User? {
+            return transaction {
+                Users.select { Users.email eq email }.map { toDomain(it) }.firstOrNull()
+            }
+        }
 
         suspend fun insert(userDTO: UserDTO): String = dbQuery {
             transaction {
@@ -28,11 +40,39 @@ class UserService(database: Database) {
             }
         }
 
-        suspend fun deleteUserById(email: String) {
+        suspend fun deleteUserByEmail(email: String) {
             dbQuery {
                 Users.deleteWhere { this.email.eq(email) }
             }
         }
+
+        fun updateUserWithEmail(email: String, userDTO: UserDTO): User? {
+            transaction {
+                Users.update({
+                    Users.email.eq(email)
+                }) { user ->
+                    if (userDTO.email.isNotBlank()) {
+                        user[Users.email] = userDTO.email
+                    }
+                    if (userDTO.password.isNotBlank()) {
+                        user[password] = userDTO.password
+                    }
+                }
+            }
+            return findUserByEmail(userDTO.email)
+        }
+
+        private fun toDomain(row: ResultRow): User {
+            return User(
+                userId = row[userId], email = row[email], password = row[password]
+            )
+        }
+
+        private fun resultRowToUser(row: ResultRow) = User(
+            userId = row[userId],
+            email = row[email],
+            password = row[password],
+        )
     }
 
     init {
