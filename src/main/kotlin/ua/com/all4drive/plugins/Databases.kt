@@ -8,9 +8,6 @@ fun Application.configureDatabases() {
         url = "jdbc:postgresql://localhost:5432/rem",
         user = "scorp",
         driver = "org.postgresql.Driver",
-//        url = "jdbc:mysql://localhost:3306/rem",
-//        user = "root",
-//        driver = "com.mysql.cj.jdbc.Driver",
         password = "8682"
     )
 }

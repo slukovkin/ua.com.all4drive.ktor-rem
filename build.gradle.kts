@@ -4,6 +4,7 @@ val logbackVersion: String by project
 
 val exposedVersion: String by project
 val h2Version: String by project
+val koinVersion: String by project
 
 plugins {
     application
@@ -44,7 +45,12 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
     implementation("org.postgresql:postgresql:42.7.3")
+    implementation("com.zaxxer:HikariCP:5.0.1")
+
     implementation("at.favre.lib:bcrypt:0.10.2")
+
+    implementation("io.insert-koin:koin-ktor:$koinVersion")
+    implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
 
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
