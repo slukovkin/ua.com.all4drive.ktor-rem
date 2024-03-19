@@ -6,12 +6,11 @@ import ua.com.all4drive.repositiries.UserRepository
 
 val userModule = module {
 
-    factory {
+    single {
         UserController(userRepository = get())
     }
 
-    factory {
+    single {
         UserRepository(database = get())
     }
-
 }

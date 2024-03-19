@@ -5,7 +5,6 @@ import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import org.koin.core.context.startKoin
 import ua.com.all4drive.di.userModule
-import ua.com.all4drive.plugins.configureRouting
 import ua.com.all4drive.routes.userRoutes
 
 const val SERVER_PORT = 3000
@@ -33,7 +32,6 @@ fun server(
 fun Application.mainModule() {
 
     startKoin {
-        configureRouting()
         userRoutes()
         modules(
             listOf(
